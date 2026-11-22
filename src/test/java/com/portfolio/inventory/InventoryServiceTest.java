@@ -1,6 +1,7 @@
 package com.portfolio.inventory;
 
 import org.junit.jupiter.api.Test;
+import java.util.List;
 import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,5 +60,16 @@ class InventoryServiceTest {
         assertThrows(IllegalArgumentException.class, () -> new Product("SKU", "Item", new BigDecimal("-1")));
         assertThrows(IllegalArgumentException.class, () -> service.addProduct(product("A", "Adapter", "2"), -1));
         assertThrows(NoSuchElementException.class, () -> service.findBySku("missing"));
+    }
+
+    @Test void searchesProductNamesIgnoringCase() {
+        InventoryService service = new InventoryService();
+        service.addProduct(product("2", "Laptop Bag", "20"), 2);
+        service.addProduct(product("1", "Gaming Laptop", "800"), 1);
+        service.addProduct(product("3", "Mouse", "5"), 1);
+        assertEquals(List.of("Gaming Laptop", "Laptop Bag"), service.searchByName(" LAPTOP ")
+                .stream().map(item -> item.product().name()).toList());
+        assertTrue(service.searchByName("monitor").isEmpty());
+        assertThrows(IllegalArgumentException.class, () -> service.searchByName(" "));
     }
 }
