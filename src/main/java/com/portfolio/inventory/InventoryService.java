@@ -77,4 +77,13 @@ public class InventoryService {
     private static void positiveAmount(int amount) {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive");
     }
+
+    /** Case-insensitive substring search, with results sorted by product name. */
+    public List<StockItem> searchByName(String query) {
+        if (query == null || query.isBlank()) throw new IllegalArgumentException("Search query is required");
+        String needle = query.strip().toLowerCase(java.util.Locale.ROOT);
+        return allByName().stream()
+                .filter(item -> item.product().name().toLowerCase(java.util.Locale.ROOT).contains(needle))
+                .toList();
+    }
 }
